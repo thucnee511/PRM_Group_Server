@@ -20,7 +20,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
     "noEmitOnError": true,
     "noImplicitThis": false,
     "noUnusedLocals": false,
