@@ -10,3 +10,31 @@ export class SignInRequestBody {
     @IsNotEmpty()
     password: string;
 }
+
+export class SignUpRequestBody {
+    @ApiProperty()
+    @IsEmail()
+    email: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    password: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    fullname: string;
+
+    @ApiProperty()
+    phoneNumber?: string;
+}
+
+export class AssignResponseData {
+    @ApiProperty()
+    token?: {
+        accessToken: string;
+        refreshToken: string;
+    }
+
+    @ApiProperty()
+    message?: string;
+}

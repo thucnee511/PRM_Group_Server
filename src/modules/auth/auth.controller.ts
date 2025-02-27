@@ -1,12 +1,15 @@
 import {
+    BadRequestException,
+    Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   Post,
+  Response,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthService } from '.';
+import { AuthService, SignUpRequestBody } from '.';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -18,7 +21,14 @@ export class AuthController {
   async signIn() {}
 
   @Post('signup')
-  async signUp() {}
+  async signUp(@Body() body : SignUpRequestBody) {
+    try{
+        const res = await this.authService.signUp(body);
+        return res;
+    } catch (error : Error) {
+        
+    }
+  }
 
   @Post('signout')
   async signOut() {}

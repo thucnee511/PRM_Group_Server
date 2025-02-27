@@ -31,6 +31,7 @@ export class User {
     type: 'varchar',
     length: 100,
     nullable: false,
+    unique: true,
   })
   email: string;
 

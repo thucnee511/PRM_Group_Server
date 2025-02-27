@@ -15,3 +15,8 @@ export interface ListBaseResponse<T>{
     data: T[];
     message?: string;
 }
+
+export interface CustomErrorResponse {
+    status: HttpStatusCode;
+    message: string;
+}
