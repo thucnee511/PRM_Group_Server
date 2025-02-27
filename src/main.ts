@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { MainModule } from './main.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { log } from 'console';
-import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(MainModule, {
@@ -12,6 +12,9 @@ async function bootstrap() {
   
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.setGlobalPrefix('api');
+
   const config = new DocumentBuilder()
     .setTitle('PRM Group Project API Documentation')
     .addBearerAuth()

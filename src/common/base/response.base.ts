@@ -18,5 +18,5 @@ export interface ListBaseResponse<T>{
 
 export interface CustomErrorResponse {
     status: HttpStatus;
-    message: string;
+    message: string | object;
 }

@@ -9,7 +9,7 @@ import { SignUpRequestBody } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('Authentication')
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
