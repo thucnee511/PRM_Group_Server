@@ -28,13 +28,15 @@ export class SignUpRequestBody {
     phoneNumber?: string;
 }
 
+export class RefreshRequestBody {
+    @ApiProperty()
+    refreshToken: string;
+}
+
 export class AssignResponseData {
     @ApiProperty()
-    token?: {
+    token: {
         accessToken: string;
         refreshToken: string;
     }
-
-    @ApiProperty()
-    message?: string;
 }

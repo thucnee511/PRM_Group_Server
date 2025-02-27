@@ -58,6 +58,13 @@ export class User {
   phoneNumber: string;
 
   @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  avatar?: string;
+
+  @Column({
     type: 'boolean',
     default: true,
   })
