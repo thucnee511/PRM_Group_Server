@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Cart, Order } from '.';
+import { Exclude } from 'class-transformer';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -38,6 +39,7 @@ export class User {
     length: 255,
     nullable: false,
   })
+  @Exclude()
   password: string;
 
   @Column({
