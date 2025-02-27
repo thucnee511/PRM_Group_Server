@@ -1,12 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { MainModule } from './main.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { log } from 'console';
+import { ClassSerializerInterceptor, Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MainModule);
+  const app = await NestFactory.create(MainModule, {
+    cors: true,
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
   
   app.enableCors();
-
+  app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('PRM Group Project API Documentation')
     .addBearerAuth()
@@ -18,5 +23,6 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 3000);
+  Logger.log(`Server running on http://localhost:${process.env.PORT ?? 3000}`, 'Bootstrap');
 }
 bootstrap();

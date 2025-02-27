@@ -1,19 +1,15 @@
 import {
-    BadRequestException,
-    Body,
-  ClassSerializerInterceptor,
+  Body,
   Controller,
   Get,
   Post,
-  Response,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthService, SignUpRequestBody } from '.';
+import { SignUpRequestBody } from './auth.dto';
+import { AuthService } from './auth.service';
 
 @ApiTags('Authentication')
-@Controller('auth')
-@UseInterceptors(ClassSerializerInterceptor)
+@Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -21,13 +17,8 @@ export class AuthController {
   async signIn() {}
 
   @Post('signup')
-  async signUp(@Body() body : SignUpRequestBody) {
-    try{
-        const res = await this.authService.signUp(body);
-        return res;
-    } catch (error : Error) {
-        
-    }
+  async signUp(@Body() body: SignUpRequestBody) {
+    return await this.authService.signUp(body);
   }
 
   @Post('signout')

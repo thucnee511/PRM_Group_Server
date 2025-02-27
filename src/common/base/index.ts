@@ -1,2 +1,1 @@
-export * from './type.base';
-export * from './dto.base';
+export * from './response.base';

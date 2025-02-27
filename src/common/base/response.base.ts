@@ -1,13 +1,13 @@
-import { HttpStatusCode } from "./type.base";
+import { HttpStatus } from "@nestjs/common";
 
 export interface ItemBaseResponse<T>{
-    status: HttpStatusCode;
+    status: HttpStatus;
     data: T;
     message?: string;
 }
 
 export interface ListBaseResponse<T>{
-    status: HttpStatusCode;
+    status: HttpStatus;
     size: number;
     page: number;
     totalSize: number;
@@ -17,6 +17,6 @@ export interface ListBaseResponse<T>{
 }
 
 export interface CustomErrorResponse {
-    status: HttpStatusCode;
+    status: HttpStatus;
     message: string;
 }
