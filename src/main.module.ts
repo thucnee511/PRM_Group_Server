@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { ApplicationModule } from "./modules";
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
                 synchronize: true,
             }),
             inject: [ConfigService],
-        })
+        }),
+        ApplicationModule,
     ],
     controllers: [],
     providers: [],
