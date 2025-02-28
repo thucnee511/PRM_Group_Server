@@ -19,6 +19,8 @@ export class AuthService {
     this.validatePassword(body.password);
     const user = await this.userRepository.findOneBy({ email: body.email });
     if (!user) throw new NotFoundException('This email does not exist');
+    if (user.isActive === false) throw new BadRequestException('This account has been deactivated');
+    if (user.isDeleted === true) throw new BadRequestException('This account has been deleted');
     const isPasswordMatch = await bcrypt.compare(body.password, user.password);
     if (!isPasswordMatch) throw new BadRequestException('Wrong login credentials');
     const payload = {

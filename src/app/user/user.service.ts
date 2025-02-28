@@ -61,4 +61,18 @@ export class UserService {
       data,
     };
   }
+
+  async delete(id: string, loginUser: User): Promise<ItemBaseResponse<User>> {
+    const data = await this.userRepository.findOneBy({id});
+    if (!data) throw new NotFoundException('Data not found');
+    if (loginUser.role !== UserRole.ADMIN && loginUser.id !== data.id) 
+      throw new ForbiddenException('You are not allowed to access this data');
+    data.isDeleted = true;
+    await this.userRepository.save(data);
+    return {
+      message: 'Data has been deleted successfully',
+      status: HttpStatus.OK,
+      data,
+    };
+  }
 }

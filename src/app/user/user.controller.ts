@@ -2,6 +2,7 @@ import {
     Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -62,5 +63,15 @@ export class UserController {
         @LoginUser() loginUser: User
     ) : Promise<ItemBaseResponse<User>> {
         return await this.userService.update(id, updateUserRequestDto, loginUser);
+    }
+
+    @Delete(":id")
+    @ApiOperation({ summary: 'Delete user by id' })
+    @Roles(UserRole.ADMIN, UserRole.USER)
+    async delete(
+        @Param('id', ParseUUIDPipe) id: string,
+        @LoginUser() loginUser: User
+    ) : Promise<ItemBaseResponse<User>> {
+        return await this.userService.delete(id, loginUser);
     }
 }
