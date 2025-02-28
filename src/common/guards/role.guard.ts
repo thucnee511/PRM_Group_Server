@@ -16,7 +16,8 @@ export class RoleGuard implements CanActivate {
             return true;
         }
         const request = context.switchToHttp().getRequest();
-        const user = request.currentUser;
+        const user = request.user;
+        console.log(user);
         if(roles.includes(user.role)) return true;
         throw new ForbiddenException('You are not allowed to access this method'); 
     }

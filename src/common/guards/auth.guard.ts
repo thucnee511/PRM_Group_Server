@@ -31,6 +31,7 @@ export class AuthenticationGuard implements CanActivate {
     if (!payload) {
       throw new ForbiddenException('Invalid token');
     }
+    console.log(payload);
     const user = await this.userRepository.findOne({
       where: { id: payload.id },
     });

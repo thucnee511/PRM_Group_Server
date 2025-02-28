@@ -21,6 +21,7 @@ export class AuthService {
     const isPasswordMatch = await bcrypt.compare(body.password, user.password);
     if (!isPasswordMatch) throw new BadRequestException('Wrong login credentials');
     const payload = {
+      id: user.id,
       email: user.email,
       avatar: user.avatar,
       role: user.role,
