@@ -108,5 +108,7 @@ export class AuthService {
       throw new BadRequestException('Password must contain at least one lowercase letter');
     if (!/[0-9]/.test(password))
       throw new BadRequestException('Password must contain at least one number');
+    if (!/[!@#$%^&*]/.test(password))
+      throw new BadRequestException('Password must contain at least one special character');
   }
 }
