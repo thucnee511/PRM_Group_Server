@@ -60,6 +60,8 @@ export class AuthService {
     const payload = await this.jwtService.verifyAsync(body.refreshToken, {
       secret: process.env.JWT_REFRESH_TOKEN_SECRET,
     });
+    delete payload.iat;
+    delete payload.exp;
     if (!payload) throw new BadRequestException('Invalid token');
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: +process.env.JWT_ACCESS_TOKEN_EXPIRATION,

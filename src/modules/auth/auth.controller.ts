@@ -31,6 +31,7 @@ export class AuthController {
 
   @UseGuards(AuthenticationGuard)
   @Post('refresh')
+  @ApiBearerAuth()
   async refresh(@Body() body: RefreshRequestBody) {
     return await this.authService.refresh(body);
   }
