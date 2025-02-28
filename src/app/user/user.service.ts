@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 import { User, UserRole } from 'src/common/models';
@@ -48,20 +48,9 @@ export class UserService {
 
   async update(id: string, updateUserRequestDto: UpdateUserRequestDto, loginUser : User): Promise<ItemBaseResponse<User>> {
     const data = await this.userRepository.findOneBy({id});
-    if (!data) {
-      return {
-        message: 'Data not found',
-        status: HttpStatus.NOT_FOUND,
-        data: null,
-      };
-    }
-    if (loginUser.role !== UserRole.ADMIN && loginUser.id !== data.id) {
-      return {
-        message: 'You are not authorized to perform this action',
-        status: HttpStatus.FORBIDDEN,
-        data: null,
-      };
-    }
+    if (!data) throw new NotFoundException('Data not found');
+    if (loginUser.role !== UserRole.ADMIN && loginUser.id !== data.id) 
+      throw new ForbiddenException('You are not allowed to access this data');
     data.fullname = updateUserRequestDto.fullname || data.fullname;
     data.phoneNumber = updateUserRequestDto.phoneNumber || data.phoneNumber;
     data.avatar = updateUserRequestDto.avatar || data.avatar;
