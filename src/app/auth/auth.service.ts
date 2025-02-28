@@ -16,6 +16,7 @@ export class AuthService {
   ) {}
 
   async signIn(body: SignInRequestBody): Promise<ItemBaseResponse<AssignResponseData>> {
+    this.validatePassword(body.password);
     const user = await this.userRepository.findOneBy({ email: body.email });
     if (!user) throw new NotFoundException('This email does not exist');
     const isPasswordMatch = await bcrypt.compare(body.password, user.password);
@@ -48,6 +49,7 @@ export class AuthService {
   }
 
   async signUp(body: SignUpRequestBody): Promise<ItemBaseResponse<AssignResponseData>> {
+    this.validatePassword(body.password);
     const user = await this.userRepository.findOneBy({ email: body.email });
     if (user) throw new BadRequestException('This email already exists');
     const password = body.password;
@@ -95,5 +97,16 @@ export class AuthService {
       data: user,
       message: 'Get user information successfully'
     }
+  }
+
+  private validatePassword(password: string): void {
+    if (password.length < 8) 
+      throw new BadRequestException('Password must be at least 8 characters');
+    if (!/[A-Z]/.test(password))
+      throw new BadRequestException('Password must contain at least one uppercase letter');
+    if (!/[a-z]/.test(password))
+      throw new BadRequestException('Password must contain at least one lowercase letter');
+    if (!/[0-9]/.test(password))
+      throw new BadRequestException('Password must contain at least one number');
   }
 }
