@@ -2,7 +2,9 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Query,
   UseGuards,
   UseInterceptors,
@@ -12,7 +14,7 @@ import { UserService } from './user.service';
 import { AuthenticationGuard, RoleGuard } from 'src/common/guards';
 import { Roles } from 'src/common/decorators';
 import { User, UserRole } from 'src/common/models';
-import { ListBaseResponse } from 'src/common/base';
+import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 
 @Controller('user')
 @ApiTags('User')
@@ -36,5 +38,14 @@ export class UserController {
         @Query('size', ParseIntPipe) size: number = 10
     ) : Promise<ListBaseResponse<User>>{
         return await this.userService.search(keyword, page, size);
+    }
+
+    @Get(":id")
+    @ApiOperation({ summary: 'Find user by id' })
+    @Roles(UserRole.ADMIN)
+    async findById(
+        @Param('id', ParseUUIDPipe) id: string
+    ) : Promise<ItemBaseResponse<User>> {
+        return await this.userService.findById(id);
     }
 }
