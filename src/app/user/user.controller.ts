@@ -1,10 +1,12 @@
 import {
+    Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
+  Put,
   Query,
   UseGuards,
   UseInterceptors,
@@ -15,6 +17,8 @@ import { AuthenticationGuard, RoleGuard } from 'src/common/guards';
 import { Roles } from 'src/common/decorators';
 import { User, UserRole } from 'src/common/models';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
+import { UpdateUserRequestDto } from './user.dto';
+import { LoginUser } from 'src/common/decorators/loginuser.decorator';
 
 @Controller('user')
 @ApiTags('User')
@@ -47,5 +51,16 @@ export class UserController {
         @Param('id', ParseUUIDPipe) id: string
     ) : Promise<ItemBaseResponse<User>> {
         return await this.userService.findById(id);
+    }
+
+    @Put(":id")
+    @ApiOperation({ summary: 'Update user by id' })
+    @Roles(UserRole.ADMIN, UserRole.USER)
+    async update(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Body() updateUserRequestDto: UpdateUserRequestDto,
+        @LoginUser() loginUser: User
+    ) : Promise<ItemBaseResponse<User>> {
+        return await this.userService.update(id, updateUserRequestDto, loginUser);
     }
 }
