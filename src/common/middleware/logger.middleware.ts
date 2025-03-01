@@ -6,7 +6,7 @@ export class LoggerMiddleware implements NestMiddleware {
     const logger = new Logger('LoggerMiddleware', { timestamp: true });
     const { method, originalUrl } = req;
     res.on('finish', () => {
-      const { statusCode , statusMessage} = res;
+      const { statusCode, statusMessage } = res;
       const origin = req.get('origin') || '';
       logger.log(
         `${method} ${originalUrl} ${statusCode} ${statusMessage} - ${origin}`,
