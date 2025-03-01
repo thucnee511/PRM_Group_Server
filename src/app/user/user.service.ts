@@ -127,4 +127,22 @@ export class UserService {
       data,
     };
   }
+
+  async findOrderById(
+    id: string,
+    orderId: string,
+  ): Promise<ItemBaseResponse<Order>> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException('Userid not found');
+    const data = await this.orderRepository.findOneBy({
+      id: orderId,
+      userId: id,
+    });
+    if (!data) throw new NotFoundException('Orderid not found');
+    return {
+      status: HttpStatus.OK,
+      message: 'Data has been retrieved successfully',
+      data,
+    };
+  }
 }

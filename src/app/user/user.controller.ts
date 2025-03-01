@@ -86,4 +86,14 @@ export class UserController {
     ) : Promise<ListBaseResponse<Order>> {
         return await this.userService.findOrdersByUserId(id, page, size);
     }
+
+    @Get(":id/orders/:orderId")
+    @ApiOperation({ summary: 'Find order by user id and order id' })
+    @Roles(UserRole.ADMIN)
+    async findOrderById(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Param('orderId', ParseUUIDPipe) orderId: string
+    ) : Promise<ItemBaseResponse<Order>> {
+        return await this.userService.findOrderById(id, orderId);
+    }
 }
