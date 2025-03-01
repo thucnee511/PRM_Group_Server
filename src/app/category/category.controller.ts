@@ -1,10 +1,18 @@
-import { Controller, UseGuards } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
-import { AuthenticationGuard } from "src/common/guards";
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AuthenticationGuard } from 'src/common/guards';
+import { CategoryService } from './category.service';
+import { Category } from 'src/common/models';
+import { ListBaseResponse } from 'src/common/base';
 
 @Controller('category')
 @ApiTags('Category')
-@UseGuards(AuthenticationGuard)
 export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'Find all categories' })
+  async findAll(): Promise<ListBaseResponse<Category>> {
+    return await this.categoryService.findAll();
+  }
 }

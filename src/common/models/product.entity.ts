@@ -23,6 +23,13 @@ export class Product {
 
   @Column({
     type: 'varchar',
+    length: 100,
+    nullable: true
+  })
+  brand: string;
+
+  @Column({
+    type: 'varchar',
     length: 2000,
     nullable: true,
   })
