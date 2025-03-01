@@ -16,7 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { UserService } from './user.service';
 import { AuthenticationGuard, RoleGuard } from 'src/common/guards';
 import { Roles } from 'src/common/decorators';
-import { User, UserRole } from 'src/common/models';
+import { Order, User, UserRole } from 'src/common/models';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 import { UpdateUserRequestDto } from './user.dto';
 import { LoginUser } from 'src/common/decorators/loginuser.decorator';
@@ -39,8 +39,8 @@ export class UserController {
     @Roles(UserRole.ADMIN)
     async search(
         @Query('keyword') keyword: string,
-        @Query('page', ParseIntPipe) page: number = 1,
-        @Query('size', ParseIntPipe) size: number = 10
+        @Query('page') page: number = 1,
+        @Query('size') size: number = 10
     ) : Promise<ListBaseResponse<User>>{
         return await this.userService.search(keyword, page, size);
     }
@@ -73,5 +73,18 @@ export class UserController {
         @LoginUser() loginUser: User
     ) : Promise<ItemBaseResponse<User>> {
         return await this.userService.delete(id, loginUser);
+    }
+
+    @Get(":id/orders")
+    @ApiOperation({ summary: 'Find all orders by user id' })
+    @ApiQuery({ name: 'page', required: false })
+    @ApiQuery({ name: 'size', required: false })
+    @Roles(UserRole.ADMIN)
+    async findOrdersByUserId(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Query('page') page: number = 1,
+        @Query('size') size: number = 10
+    ) : Promise<ListBaseResponse<Order>> {
+        return await this.userService.findOrdersByUserId(id, page, size);
     }
 }

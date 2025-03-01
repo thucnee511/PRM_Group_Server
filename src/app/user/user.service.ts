@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { User, UserRole } from 'src/common/models';
+import { Order, User, UserRole } from 'src/common/models';
 import { Like, Not, Repository } from 'typeorm';
 import { UpdateUserRequestDto } from './user.dto';
 
@@ -14,6 +14,8 @@ import { UpdateUserRequestDto } from './user.dto';
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Order)
+    private readonly orderRepository: Repository<Order>,
   ) {}
 
   async search(
@@ -93,6 +95,35 @@ export class UserService {
     return {
       message: 'Data has been deleted successfully',
       status: HttpStatus.OK,
+      data,
+    };
+  }
+
+  async findOrdersByUserId(
+    id: string,
+    page: number,
+    size: number,
+  ): Promise<ListBaseResponse<Order>> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException('Userid not found');
+    const [data, total] = await this.orderRepository.findAndCount({
+      relations: {
+        orderItems: true,
+      },
+      where: {
+        userId: id,
+      },
+      skip: (page - 1) * size,
+      take: size,
+    });
+    const totalPage = Math.ceil(total / size);
+    return {
+      status: HttpStatus.OK,
+      message: 'Data has been retrieved successfully',
+      page,
+      size,
+      totalPage,
+      totalSize: total,
       data,
     };
   }
