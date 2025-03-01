@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { Order, User, UserRole } from 'src/common/models';
+import { Cart, Order, User, UserRole } from 'src/common/models';
 import { Like, Not, Repository } from 'typeorm';
 import { UpdateUserRequestDto } from './user.dto';
 
@@ -134,9 +134,11 @@ export class UserService {
   ): Promise<ItemBaseResponse<Order>> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) throw new NotFoundException('Userid not found');
-    const data = await this.orderRepository.findOneBy({
-      id: orderId,
-      userId: id,
+    const data = await this.orderRepository.findOne({
+      relations: {
+        orderItems: true,
+      },
+      where: { id: orderId, userId: id },
     });
     if (!data) throw new NotFoundException('Orderid not found');
     return {
