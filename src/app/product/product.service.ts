@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { Brand, Category, Product } from 'src/common/models';
+import { Brand, Category, Product, User } from 'src/common/models';
 import { Between, Like, Repository } from 'typeorm';
 import { CreateProductRequestDto } from './product.dto';
 
@@ -30,6 +30,7 @@ export class ProductService {
     categoryId: string,
     brandId: string,
     order: number,
+    user: User
   ): Promise<ListBaseResponse<Product>> {
     if (categoryId) {
       const category = await this.categoryRepository.findOne({
@@ -72,6 +73,7 @@ export class ProductService {
             : maxPrice
             ? Between(0, maxPrice)
             : undefined,
+        isDeleted: user ? user.role == 'admin' ? undefined : false : false,
       },
       order:
         order == 1
@@ -129,10 +131,11 @@ export class ProductService {
     };
   }
 
-  async getOne(id: string): Promise<ItemBaseResponse<Product>> {
+  async getOne(id: string, user: User): Promise<ItemBaseResponse<Product>> {
     const product = await this.productRepository.findOne({
       where: {
         id: id,
+        isDeleted: user ? user.role == 'admin' ? undefined : false : false,
       },
     });
     if (!product) throw new NotFoundException('Product not found');

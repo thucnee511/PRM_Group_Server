@@ -15,7 +15,8 @@ import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { CreateProductRequestDto } from './product.dto';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { Product } from 'src/common/models';
+import { Product, User } from 'src/common/models';
+import { LoginUser } from 'src/common/decorators/loginuser.decorator';
 
 @Controller('product')
 @ApiTags('Product')
@@ -42,6 +43,7 @@ export class ProductController {
     @Query('categoryId') categoryId: string,
     @Query('brandId') brandId: string,
     @Query('order', new DefaultValuePipe(0), ParseIntPipe) order: number,
+    @LoginUser() user: User,
   ): Promise<ListBaseResponse<Product>> {
     return this.productService.findAll(
       page,
@@ -52,13 +54,17 @@ export class ProductController {
       categoryId,
       brandId,
       order,
+      user,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a product by id' })
-  async findById(@Param('id') id: string): Promise<ItemBaseResponse<Product>> {
-    return this.productService.getOne(id);
+  async findById(
+    @Param('id') id: string,
+    @LoginUser() user: User,
+  ): Promise<ItemBaseResponse<Product>> {
+    return this.productService.getOne(id, user);
   }
 
   @Post()
