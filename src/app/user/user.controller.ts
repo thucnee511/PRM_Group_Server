@@ -2,9 +2,11 @@ import {
     Body,
   ClassSerializerInterceptor,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Put,
   Query,
@@ -38,8 +40,8 @@ export class UserController {
     @Roles(UserRole.ADMIN)
     async search(
         @Query('keyword') keyword: string,
-        @Query('page') page: number = 1,
-        @Query('size') size: number = 10
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number
     ) : Promise<ListBaseResponse<User>>{
         return await this.userService.search(keyword, page, size);
     }
@@ -81,8 +83,8 @@ export class UserController {
     @Roles(UserRole.ADMIN)
     async findOrdersByUserId(
         @Param('id', ParseUUIDPipe) id: string,
-        @Query('page') page: number = 1,
-        @Query('size') size: number = 10
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+        @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number
     ) : Promise<ListBaseResponse<Order>> {
         return await this.userService.findOrdersByUserId(id, page, size);
     }
