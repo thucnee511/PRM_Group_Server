@@ -1,4 +1,9 @@
-import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 import { Brand, Category, Product } from 'src/common/models';
@@ -49,12 +54,16 @@ export class ProductService {
       },
       where: {
         name: keyword ? Like(`%${keyword}%`) : undefined,
-        brand: brandId ? {
-            name: keyword ? Like(`%${keyword}%`) : undefined,
-        } : undefined,
-        category: categoryId ? {
-            name: keyword ? Like(`%${keyword}%`) : undefined,
-        } : undefined,
+        brand: brandId
+          ? {
+              name: keyword ? Like(`%${keyword}%`) : undefined,
+            }
+          : undefined,
+        category: categoryId
+          ? {
+              name: keyword ? Like(`%${keyword}%`) : undefined,
+            }
+          : undefined,
         price:
           minPrice && maxPrice
             ? Between(minPrice, maxPrice)
@@ -105,16 +114,16 @@ export class ProductService {
     });
     if (!brand) throw new NotFoundException('Brand not found');
     this.productRepository.create({
-      ...body
+      ...body,
     });
     return {
-        status: HttpStatus.CREATED,
-        message: 'Product has been created successfully',
-        data: await this.productRepository.findOne({
-            where: {
-                name: body.name,
-            }
-        })
+      status: HttpStatus.CREATED,
+      message: 'Product has been created successfully',
+      data: await this.productRepository.findOne({
+        where: {
+          name: body.name,
+        },
+      }),
     };
   }
 
@@ -129,6 +138,56 @@ export class ProductService {
       status: HttpStatus.OK,
       message: 'Data has been retrieved successfully',
       data: product,
+    };
+  }
+
+  async update(
+    id: string,
+    body: CreateProductRequestDto,
+  ): Promise<ItemBaseResponse<Product>> {
+    if (body.categoryId) {
+      const category = await this.categoryRepository.findOne({
+        where: {
+          id: body.categoryId,
+        },
+      });
+      if (!category) throw new NotFoundException('Category not found');
+    }
+    if (body.brandId) {
+      const brand = await this.brandRepository.findOne({
+        where: {
+          id: body.brandId,
+        },
+      });
+      if (!brand) throw new NotFoundException('Brand not found');
+    }
+    const product = await this.productRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    this.productRepository.update(
+      {
+        id: id,
+      },
+      {
+        name: body.name ? body.name : product.name,
+        price: body.price ? body.price : product.price,
+        stock: body.stock ? body.stock : product.stock,
+        imageUrl: body.imageUrl ? body.imageUrl : product.imageUrl,
+        categoryId: body.categoryId ? body.categoryId : product.categoryId,
+        brandId: body.brandId ? body.brandId : product.brandId,
+      },
+    );
+    return {
+      status: HttpStatus.OK,
+      message: 'Product has been updated successfully',
+      data: await this.productRepository.findOne({
+        where: {
+          id: id,
+        },
+      }),
     };
   }
 }

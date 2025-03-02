@@ -22,3 +22,20 @@ export class CreateProductRequestDto {
     @IsUUID()
     brandId: string;
 }
+
+export class UpdateProductRequestDto {
+    @ApiProperty()
+    name?: string;
+    @ApiProperty()
+    description?: string;
+    @ApiProperty()
+    price?: number;
+    @ApiProperty()
+    stock?: number;
+    @ApiProperty()
+    imageUrl?: string;
+    @ApiProperty()
+    categoryId?: string;
+    @ApiProperty()
+    brandId?: string;
+}

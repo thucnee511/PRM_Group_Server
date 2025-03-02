@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
@@ -66,5 +67,14 @@ export class ProductController {
     @Body() body: CreateProductRequestDto,
   ): Promise<ItemBaseResponse<Product>> {
     return this.productService.create(body);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update a product by id' })
+  async update(
+    @Param('id') id: string,
+    @Body() body: CreateProductRequestDto,
+  ): Promise<ItemBaseResponse<Product>> {
+    return this.productService.update(id, body);
   }
 }
