@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Product } from ".";
+import { Brand, Product } from ".";
 
 @Entity('categories')
 export class Category{
@@ -28,4 +28,7 @@ export class Category{
 
     @OneToMany(() => Product, product => product.category)
     products: Product[];
+
+    @OneToMany(() => Brand, brand => brand.category)
+    brands: Brand[];
 }

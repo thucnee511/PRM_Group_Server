@@ -1,8 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListBaseResponse } from 'src/common/base';
-import { Category, Product } from 'src/common/models';
+import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
+import { Brand, Category, Product } from 'src/common/models';
 import { Between, Like, Repository } from 'typeorm';
+import { CreateProductRequestDto } from './product.dto';
 
 @Injectable()
 export class ProductService {
@@ -11,6 +12,8 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Brand)
+    private readonly brandRepository: Repository<Brand>,
   ) {}
 
   async findAll(
@@ -20,6 +23,7 @@ export class ProductService {
     minPrice: number,
     maxPrice: number,
     categoryId: string,
+    brandId: string,
     order: number,
   ): Promise<ListBaseResponse<Product>> {
     if (categoryId) {
@@ -30,11 +34,27 @@ export class ProductService {
       });
       if (!category) throw new NotFoundException('Category not found');
     }
+    if (brandId) {
+      const brand = await this.brandRepository.findOne({
+        where: {
+          id: brandId,
+        },
+      });
+      if (!brand) throw new NotFoundException('Brand not found');
+    }
     const [products, total] = await this.productRepository.findAndCount({
+      relations: {
+        category: categoryId ? true : false,
+        brand: brandId ? true : false,
+      },
       where: {
         name: keyword ? Like(`%${keyword}%`) : undefined,
-        brand: keyword ? Like(`%${keyword}%`) : undefined,
-        categoryId: categoryId ? categoryId : undefined,
+        brand: brandId ? {
+            name: keyword ? Like(`%${keyword}%`) : undefined,
+        } : undefined,
+        category: categoryId ? {
+            name: keyword ? Like(`%${keyword}%`) : undefined,
+        } : undefined,
         price:
           minPrice && maxPrice
             ? Between(minPrice, maxPrice)
@@ -66,6 +86,35 @@ export class ProductService {
       totalSize: total,
       totalPage: totalPages,
       data: products,
+    };
+  }
+
+  async create(
+    body: CreateProductRequestDto,
+  ): Promise<ItemBaseResponse<Product>> {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        id: body.categoryId,
+      },
+    });
+    if (!category) throw new NotFoundException('Category not found');
+    const brand = await this.brandRepository.findOne({
+      where: {
+        id: body.brandId,
+      },
+    });
+    if (!brand) throw new NotFoundException('Brand not found');
+    this.productRepository.create({
+      ...body
+    });
+    return {
+        status: HttpStatus.CREATED,
+        message: 'Product has been created successfully',
+        data: await this.productRepository.findOne({
+            where: {
+                name: body.name,
+            }
+        })
     };
   }
 }

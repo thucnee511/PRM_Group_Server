@@ -7,7 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { CartItem, Category } from '.';
+import { Brand, CartItem, Category } from '.';
+import { Exclude } from 'class-transformer';
 
 @Entity('products')
 export class Product {
@@ -18,15 +19,9 @@ export class Product {
     type: 'varchar',
     length: 100,
     nullable: false,
+    unique: true,
   })
   name: string;
-
-  @Column({
-    type: 'varchar',
-    length: 100,
-    nullable: true
-  })
-  brand: string;
 
   @Column({
     type: 'varchar',
@@ -79,8 +74,20 @@ export class Product {
   })
   categoryId: string;
 
+  @Column({
+    type: 'uuid',
+    length: 36,
+    nullable: false,
+  })
+  brandId: string;
+
+  @Exclude()
   @ManyToOne(() => Category, (category) => category.products)
   category: Category;
+
+  @Exclude()
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  brand: Brand;
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.product)
   cartItems: CartItem[];
