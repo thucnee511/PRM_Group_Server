@@ -11,7 +11,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Find all categories' })
+  @ApiOperation({ summary: 'Get all categories' })
   async findAll(): Promise<ListBaseResponse<Category>> {
     return await this.categoryService.findAll();
   }
