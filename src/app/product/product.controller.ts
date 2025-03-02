@@ -9,17 +9,21 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { CreateProductRequestDto } from './product.dto';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { Product, User } from 'src/common/models';
+import { Product, User, UserRole } from 'src/common/models';
 import { LoginUser } from 'src/common/decorators/loginuser.decorator';
+import { AuthenticationGuard, RoleGuard } from 'src/common/guards';
+import { Roles } from 'src/common/decorators';
 
 @Controller('product')
 @ApiTags('Product')
+@ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -69,6 +73,8 @@ export class ProductController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new product' })
+  @UseGuards(AuthenticationGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   async create(
     @Body() body: CreateProductRequestDto,
   ): Promise<ItemBaseResponse<Product>> {
@@ -76,6 +82,8 @@ export class ProductController {
   }
 
   @Put(':id')
+  @UseGuards(AuthenticationGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update a product by id' })
   async update(
     @Param('id') id: string,
