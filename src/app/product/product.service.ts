@@ -195,4 +195,31 @@ export class ProductService {
       }),
     };
   }
+
+  async delete(id : string): Promise<ItemBaseResponse<Product>> {
+    const product = await this.productRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    if (product.isDeleted) throw new NotFoundException('Product has been deleted already');
+    this.productRepository.update(
+      {
+        id: id,
+      },
+      {
+        isDeleted: true,
+      },
+    );
+    return {
+      status: HttpStatus.OK,
+      message: 'Product has been deleted successfully',
+      data: await this.productRepository.findOne({
+        where: {
+          id: id,
+        },
+      }),
+    };
+  }
 }

@@ -91,7 +91,7 @@ export class UserService {
     if (!data) throw new NotFoundException('Data not found');
     if (loginUser.role !== UserRole.ADMIN && loginUser.id !== data.id)
       throw new ForbiddenException('You are not allowed to access this data');
-    if (data.isDeleted) throw new BadRequestException('This user already has been deleted');
+    if (data.isDeleted) throw new BadRequestException('This user has been deleted already');
     data.isDeleted = true;
     await this.userRepository.save(data);
     return {
