@@ -75,14 +75,16 @@ export class ProductService {
       },
       order:
         order == 1
-          ? { price: 'ASC' }
+          ? { createdAt: 'DESC' } // Default: latest product
           : order == 2
-          ? { price: 'DESC' }
+          ? { createdAt: 'ASC' } // Oldest product
           : order == 3
-          ? { name: 'ASC' }
+          ? { price: 'ASC' } // Cheapest product
           : order == 4
-          ? { name: 'DESC' }
-          : { createdAt: 'DESC' },
+          ? { price: 'DESC' } // Most expensive product
+          : order == 5
+          ? { name: 'ASC' } // A-Z
+          : { name: 'DESC' }, // Z-A
       take: size,
       skip: (page - 1) * size,
     });
