@@ -4,6 +4,7 @@ import {
   Controller,
   DefaultValuePipe,
   Get,
+  Param,
   ParseIntPipe,
   Post,
   Query,
@@ -51,6 +52,12 @@ export class ProductController {
       brandId,
       order,
     );
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a product by id' })
+  async findById(@Param('id') id: string): Promise<ItemBaseResponse<Product>> {
+    return this.productService.getOne(id);
   }
 
   @Post()

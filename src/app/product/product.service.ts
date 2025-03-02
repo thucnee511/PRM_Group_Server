@@ -117,4 +117,18 @@ export class ProductService {
         })
     };
   }
+
+  async getOne(id: string): Promise<ItemBaseResponse<Product>> {
+    const product = await this.productRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    return {
+      status: HttpStatus.OK,
+      message: 'Data has been retrieved successfully',
+      data: product,
+    };
+  }
 }
