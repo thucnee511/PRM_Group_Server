@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -90,5 +91,13 @@ export class ProductController {
     @Body() body: CreateProductRequestDto,
   ): Promise<ItemBaseResponse<Product>> {
     return this.productService.update(id, body);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthenticationGuard, RoleGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Delete a product by id' })
+  async delete(@Param('id') id: string): Promise<ItemBaseResponse<Product>> {
+    return this.productService.delete(id);
   }
 }
