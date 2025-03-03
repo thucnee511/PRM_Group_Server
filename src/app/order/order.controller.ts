@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -71,5 +72,11 @@ export class OrderController {
     @LoginUser() user: User,
   ): Promise<ItemBaseResponse<Order>> {
     return await this.orderService.getOrderById(id, user);
+  }
+
+  @Post()
+  @Roles(UserRole.USER)
+  async createOrder(@LoginUser() user: User, @Query('cartId') cartId: string) {
+    return await this.orderService.createOrder(user, cartId);
   }
 }

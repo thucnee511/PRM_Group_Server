@@ -98,4 +98,40 @@ export class OrderService {
       data: order,
     };
   }
+
+    async createOrder(user: User, cartId: string): Promise<ItemBaseResponse<Order>> {
+        const cart = await this.cartRepository.findOne({
+            where: {
+                id: cartId,
+                userId: user.id,
+            },
+            relations: {
+                cartItems: true,
+            },
+        });
+        if (!cart) throw new NotFoundException('Cart not found');
+        const order = new Order();
+        order.userId = user.id;
+        order.totalItems = cart.totalItems;
+        order.totalValue = cart.totalValue;
+        const newOrder = await this.orderRepository.save(order);
+        const orderItems = cart.cartItems.map((cartItem) => {
+            const orderItem = new OrderItem();
+            orderItem.orderId = newOrder.id;
+            orderItem.productId = cartItem.productId;
+            orderItem.quantity = cartItem.quantity;
+            orderItem.price = cartItem.price;
+            return orderItem;
+        });
+        await this.orderItemRepository.save(orderItems);
+        await this.cartItemRepository.delete(cart.cartItems.map((cartItem) => cartItem.id));
+        cart.totalItems = 0;
+        cart.totalValue = 0;
+        await this.cartRepository.save(cart);
+        return {
+            status: HttpStatus.CREATED,
+            message: 'Order created successfully',
+            data: newOrder,
+        };
+    } 
 }

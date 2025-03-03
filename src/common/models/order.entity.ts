@@ -57,7 +57,7 @@ export class OrderItem {
         length: 36,
         nullable: false,
     })
-    cartId: string;
+    orderId: string;
     
     @Column({
         type: 'uuid',
