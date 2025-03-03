@@ -79,6 +79,12 @@ export class CartItem {
     })
     price: number;
 
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
     @ManyToOne(() => Cart, cart => cart.cartItems)
     cart: Cart;
 

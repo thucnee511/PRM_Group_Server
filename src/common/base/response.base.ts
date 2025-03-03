@@ -1,12 +1,12 @@
 import { HttpStatus } from "@nestjs/common";
 
-export interface ItemBaseResponse<T>{
+export class ItemBaseResponse<T>{
     status: HttpStatus;
     data: T;
     message?: string;
 }
 
-export interface ListBaseResponse<T>{
+export class ListBaseResponse<T>{
     status: HttpStatus;
     size: number;
     page: number;
@@ -16,7 +16,7 @@ export interface ListBaseResponse<T>{
     message?: string;
 }
 
-export interface CustomErrorResponse {
+export class CustomErrorResponse {
     status: HttpStatus;
     message: string | object;
 }

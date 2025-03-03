@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
-import { Cart, CartItem, User } from 'src/common/models';
+import { Cart, CartItem, Product, User } from 'src/common/models';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,6 +13,8 @@ export class CartService {
     private readonly cartItemRepository: Repository<CartItem>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async getCart(userId: string): Promise<ItemBaseResponse<Cart>> {
@@ -57,6 +59,48 @@ export class CartService {
       totalPage: Math.ceil(total / size),
       totalSize: total,
       data: cartItems,
+    };
+  }
+
+  async addCartItem(
+    cartId: string,
+    productId: string,
+    quantity: number,
+    user: User,
+  ): Promise<ItemBaseResponse<CartItem>> {
+    cartId =
+      (await this.cartRepository.findOne({ where: { id: cartId } })).id ||
+      (await this.getCart(user.id)).data.id;
+    const cart = await this.cartRepository.findOne({
+      where: { id: cartId },
+    });
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { cartId, productId },
+    });
+    if (cartItem) {
+      cartItem.quantity += quantity;
+      await this.cartItemRepository.save(cartItem);
+    } else {
+      const newCartItem = new CartItem();
+      newCartItem.cartId = cartId;
+      newCartItem.productId = productId;
+      newCartItem.quantity = quantity;
+      newCartItem.price = product.price;
+      await this.cartItemRepository.insert(newCartItem);
+    }
+    cart.totalItems += quantity;
+    cart.totalValue += product.price * quantity;
+    await this.cartRepository.save(cart);
+    return {
+      status: HttpStatus.OK,
+      message: 'Add cart item successfully',
+      data: await this.cartItemRepository.findOne({
+        where: { cartId, productId },
+      }),
     };
   }
 }
