@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -75,5 +76,14 @@ export class CartController {
     @Query('quantity', ParseIntPipe) quantity: number,
   ): Promise<ItemBaseResponse<CartItem>> {
     return await this.cartService.updateCartItem(cartId, productId, quantity);
+  }
+
+  @Delete(':id/items')
+  @ApiOperation({ summary: 'Delete cart item' })
+  async deleteItem(
+    @Param('id', ParseUUIDPipe) cartId: string,
+    @Query('productId', ParseUUIDPipe) productId: string,
+  ): Promise<ItemBaseResponse<CartItem>> {
+    return await this.cartService.deleteCartItem(cartId, productId);
   }
 }

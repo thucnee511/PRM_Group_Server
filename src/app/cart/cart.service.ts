@@ -135,4 +135,28 @@ export class CartService {
       data: cartItem,
     };
   }
+
+  async deleteCartItem(cartId: string, productId: string): Promise<ItemBaseResponse<CartItem>> {
+    const cart = await this.cartRepository.findOne({
+      where: { id: cartId },
+    });
+    if (!cart) throw new NotFoundException('Cart not found');
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { cartId, productId },
+    });
+    if (!cartItem) throw new NotFoundException('Cart item not found');
+    cart.totalItems -= cartItem.quantity;
+    cart.totalValue -= product.price * cartItem.quantity;
+    await this.cartItemRepository.delete({ cartId, productId });
+    await this.cartRepository.save(cart);
+    return {
+      status: HttpStatus.OK,
+      message: 'Delete cart item successfully',
+      data: cartItem,
+    };
+  }
 }
