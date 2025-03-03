@@ -19,6 +19,7 @@ export class Cart {
     type: 'uuid',
     length: 36,
     nullable: false,
+    unique: true,
   })
   userId: string;
 

@@ -6,6 +6,7 @@ import { LoggerMiddleware } from './common/middleware';
 import { UserModule } from './app/user/user.module';
 import { CategoryModule } from './app/category/category.module';
 import { ProductModule } from './app/product/product.module';
+import { CartModule } from './app/cart/cart.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { ProductModule } from './app/product/product.module';
     AuthModule,
     UserModule,
     CategoryModule,
-    ProductModule
+    ProductModule,
+    CartModule
   ],
   controllers: [],
   providers: [],
