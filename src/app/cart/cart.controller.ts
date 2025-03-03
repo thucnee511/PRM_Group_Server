@@ -13,7 +13,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthenticationGuard } from 'src/common/guards';
 import { LoginUser } from 'src/common/decorators/loginuser.decorator';
 import { Cart, CartItem, User } from 'src/common/models';
@@ -35,6 +40,8 @@ export class CartController {
 
   @Get(':id/items')
   @ApiOperation({ summary: 'Get cart items' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'size', required: false })
   async getCartItems(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('size', new DefaultValuePipe(10), ParseIntPipe) size: number,
@@ -69,6 +76,4 @@ export class CartController {
   ): Promise<ItemBaseResponse<CartItem>> {
     return await this.cartService.updateCartItem(cartId, productId, quantity);
   }
-
-  
 }

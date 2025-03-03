@@ -27,13 +27,16 @@ export class CartService {
       const newCart = new Cart();
       newCart.userId = userId;
       await this.cartRepository.insert(newCart);
+      return {
+        status: HttpStatus.OK,
+        message: 'Get cart successfully',
+        data: await this.cartRepository.findOne({ where: { userId: userId } }),
+      };
     }
     return {
       status: HttpStatus.OK,
       message: 'Get cart successfully',
-      data: cart
-        ? cart
-        : await this.cartRepository.findOne({ where: { userId: userId } }),
+      data: cart,
     };
   }
 
