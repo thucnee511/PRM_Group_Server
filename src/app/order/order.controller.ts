@@ -3,6 +3,7 @@ import {
   DefaultValuePipe,
   ForbiddenException,
   Get,
+  Param,
   ParseIntPipe,
   Query,
   UseGuards,
@@ -10,10 +11,11 @@ import {
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { OrderService } from './order.service';
 import { AuthenticationGuard, RoleGuard } from 'src/common/guards';
-import { User, UserRole } from 'src/common/models';
+import { Order, User, UserRole } from 'src/common/models';
 import { Roles } from 'src/common/decorators';
 import { ParseDatePipe } from 'src/common/pipes';
 import { LoginUser } from 'src/common/decorators/loginuser.decorator';
+import { ItemBaseResponse } from 'src/common/base';
 
 @Controller('orders')
 @ApiTags('Orders')
@@ -60,5 +62,14 @@ export class OrderController {
       orderType,
       productId,
     );
+  }
+
+  @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.USER)
+  async getOrderById(
+    @Param('id') id: string,
+    @LoginUser() user: User,
+  ): Promise<ItemBaseResponse<Order>> {
+    return await this.orderService.getOrderById(id, user);
   }
 }

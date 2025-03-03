@@ -1,6 +1,11 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListBaseResponse } from 'src/common/base';
+import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 import {
   Cart,
   CartItem,
@@ -8,6 +13,7 @@ import {
   OrderItem,
   Product,
   User,
+  UserRole,
 } from 'src/common/models';
 import { Between, Repository } from 'typeorm';
 
@@ -52,8 +58,8 @@ export class OrderService {
             ? Between(new Date(0), toDate)
             : undefined,
         orderItems: {
-            productId: productId ? productId : undefined,
-        }
+          productId: productId ? productId : undefined,
+        },
       },
       order: {
         createdAt: orderType === 'asc' ? 'ASC' : 'DESC',
@@ -69,6 +75,27 @@ export class OrderService {
       totalSize: total,
       totalPage: Math.ceil(total / size),
       data: orders,
+    };
+  }
+
+  async getOrderById(id: string, user: User): Promise<ItemBaseResponse<Order>> {
+    const order = await this.orderRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        orderItems: true,
+      },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (user.role === UserRole.USER && order.userId !== user.id)
+      throw new ForbiddenException(
+        'You are not allowed to view other user orders',
+      );
+    return {
+      status: HttpStatus.OK,
+      message: 'Order fetched successfully',
+      data: order,
     };
   }
 }
