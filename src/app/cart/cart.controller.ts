@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
   UseGuards,
   UseInterceptors,
@@ -58,4 +59,16 @@ export class CartController {
       user,
     );
   }
+
+  @Put(':id/items')
+  @ApiOperation({ summary: 'Update cart item' })
+  async updateItem(
+    @Param('id', ParseUUIDPipe) cartId: string,
+    @Query('productId', ParseUUIDPipe) productId: string,
+    @Query('quantity', ParseIntPipe) quantity: number,
+  ): Promise<ItemBaseResponse<CartItem>> {
+    return await this.cartService.updateCartItem(cartId, productId, quantity);
+  }
+
+  
 }

@@ -103,4 +103,33 @@ export class CartService {
       }),
     };
   }
+
+  async updateCartItem(
+    cartId: string,
+    productId: string,
+    quantity: number,
+  ): Promise<ItemBaseResponse<CartItem>> {
+    const cart = await this.cartRepository.findOne({
+      where: { id: cartId },
+    });
+    if (!cart) throw new NotFoundException('Cart not found');
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+    const cartItem = await this.cartItemRepository.findOne({
+      where: { cartId, productId },
+    });
+    if (!cartItem) throw new NotFoundException('Cart item not found');
+    cart.totalItems += quantity - cartItem.quantity;
+    cart.totalValue += product.price * (quantity - cartItem.quantity);
+    cartItem.quantity = quantity;
+    await this.cartItemRepository.save(cartItem);
+    await this.cartRepository.save(cart);
+    return {
+      status: HttpStatus.OK,
+      message: 'Update cart item successfully',
+      data: cartItem,
+    };
+  }
 }
