@@ -7,7 +7,7 @@ on:
 
 jobs:
   docker-compose:
-    runs-on: ubuntu-latest
+    runs-on: prm_group
     environment: docker
     steps:
       - name: Checkout code
