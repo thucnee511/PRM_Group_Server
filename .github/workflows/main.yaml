@@ -1,0 +1,31 @@
+name: Deploy on VPS
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-compose:
+    runs-on: self-hosted
+    environment: docker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use github secrets
+        run: |
+          echo '${{ secrets.ENV }}' >> .env
+        shell: bash
+
+      - name: Compose down
+        run: docker compose down
+        shell: bash
+
+      - name: Run `docker compose`
+        run: docker compose up --build -d
+        shell: bash 
+
+      - name: Remove unused images
+        run: docker system prune -a -f
+        shell: bash
