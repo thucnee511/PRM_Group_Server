@@ -19,7 +19,7 @@ WORKDIR /usr/src/app
 ################################################################################
 # Create a stage for installing production dependecies.
 FROM base as deps
-COPY package.json yarn.lock ./
+COPY package.json ./
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.yarn to speed up subsequent builds.
@@ -28,7 +28,7 @@ COPY package.json yarn.lock ./
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=yarn.lock,target=yarn.lock \
     --mount=type=cache,target=/root/.yarn \
-    yarn install --production --frozen-lockfile
+    npm install --production --frozen-lockfile
 
 ################################################################################
 # Create a stage for building the application.
@@ -39,12 +39,12 @@ FROM deps as build
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=yarn.lock,target=yarn.lock \
     --mount=type=cache,target=/root/.yarn \
-    yarn install --frozen-lockfile
+    npm install --frozen-lockfile
 
 # Copy the rest of the source files into the image.
 COPY . .
 # Run the build script.
-RUN yarn run build
+RUN npm run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
@@ -71,4 +71,4 @@ COPY --from=build /usr/src/app/dist ./dist
 EXPOSE 3000
 
 # Run the application.
-CMD ["yarn", "prod"]
+CMD ["node", "dist/main"]
