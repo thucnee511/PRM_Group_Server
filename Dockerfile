@@ -26,7 +26,6 @@ COPY package.json ./
 # Leverage bind mounts to package.json and yarn.lock to avoid having to copy them
 # into this layer.
 RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
     --mount=type=cache,target=/root/.yarn \
     npm install --production --frozen-lockfile
 
@@ -37,7 +36,6 @@ FROM deps as build
 # Download additional development dependencies before building, as some projects require
 # "devDependencies" to be installed to build. If you don't need this, remove this step.
 RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
     --mount=type=cache,target=/root/.yarn \
     npm install --frozen-lockfile
 
