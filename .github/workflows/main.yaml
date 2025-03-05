@@ -7,7 +7,7 @@ on:
 
 jobs:
   docker-compose:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     environment: docker
     steps:
       - name: Checkout code
