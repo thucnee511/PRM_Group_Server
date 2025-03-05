@@ -27,7 +27,7 @@ COPY package.json ./
 # into this layer.
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.yarn \
-    npm install --production --frozen-lockfile
+    yarn install --production --frozen-lockfile
 
 ################################################################################
 # Create a stage for building the application.
@@ -37,12 +37,12 @@ FROM deps as build
 # "devDependencies" to be installed to build. If you don't need this, remove this step.
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.yarn \
-    npm install --frozen-lockfile
+    yarn install --frozen-lockfile
 
 # Copy the rest of the source files into the image.
 COPY . .
 # Run the build script.
-RUN npm run build
+RUN yarn run build
 
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
