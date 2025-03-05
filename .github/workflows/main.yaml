@@ -7,7 +7,7 @@ on:
 
 jobs:
   docker-compose:
-    runs-on: prm_group
+    runs-on: self-hosted
     environment: docker
     steps:
       - name: Checkout code
