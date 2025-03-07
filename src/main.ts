@@ -12,7 +12,22 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  app.enableCors();
+  app.enableCors({
+    origin: (process.env.FE_URL as string) || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'DNT',
+      'User-Agent',
+      'X-Requested-With',
+      'If-Modified-Since',
+      'Cache-Control',
+      'Content-Type',
+      'Range',
+      'Authorization',
+    ],
+    exposedHeaders: ['Content-Length', 'Content-Range', 'Content-Type'],
+    maxAge: 86400,
+  });
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api');
