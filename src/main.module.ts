@@ -24,6 +24,7 @@ import { BrandModule } from './app/brand/brand.module';
         database: configService.get('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
+        charset: 'utf8mb4_unicode_ci',
       }),
       inject: [ConfigService],
     }),
