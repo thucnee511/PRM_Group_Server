@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './brand.dto';
+import { AuthenticationGuard } from 'src/common/guards';
 
 @Controller('brand')
 @ApiTags('Brand')
@@ -14,6 +15,8 @@ export class BrandController {
   }
 
   @Post()
+  @UseGuards(AuthenticationGuard)
+  @ApiBearerAuth()
   async create(@Body() body: CreateBrandDto) {
     return await this.brandService.create(body);
   }
