@@ -117,9 +117,10 @@ export class ProductService {
       },
     });
     if (!brand) throw new NotFoundException('Brand not found');
-    const data = await this.productRepository.create({
+    const data = this.productRepository.create({
       ...body,
     });
+    await this.productRepository.save(data);
     return {
       status: HttpStatus.CREATED,
       message: 'Product has been created successfully',
@@ -168,7 +169,7 @@ export class ProductService {
       },
     });
     if (!product) throw new NotFoundException('Product not found');
-    this.productRepository.update(
+    await this.productRepository.update(
       {
         id: id,
       },
