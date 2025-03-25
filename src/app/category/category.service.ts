@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListBaseResponse } from 'src/common/base';
+import { ItemBaseResponse, ListBaseResponse } from 'src/common/base';
 import { Category } from 'src/common/models';
 import { Like, Repository } from 'typeorm';
+import { CreateCategoryDto } from './category.dto';
 
 @Injectable()
 export class CategoryService {
+  
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
@@ -22,5 +24,16 @@ export class CategoryService {
       totalSize: total,
       data,
     };
+  }
+
+  create(body: CreateCategoryDto): Promise<ItemBaseResponse<Category>> {
+    const category = this.categoryRepository.create(body);
+    return this.categoryRepository.save(category).then((data) => {
+      return {
+        status: 200,
+        message: 'Data has been created successfully',
+        data,
+      };
+    });
   }
 }
