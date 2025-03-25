@@ -55,7 +55,7 @@ export class User {
     length: 15,
     nullable: true,
   })
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @Column({
     type: 'varchar',
