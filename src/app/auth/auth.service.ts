@@ -5,11 +5,13 @@ import { Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { SignInRequestBody, SignUpRequestBody, AssignResponseData, RefreshRequestBody } from './auth.dto';
+import { SignInRequestBody, SignUpRequestBody, AssignResponseData, RefreshRequestBody, GoogleSignInRequestBody } from './auth.dto';
 import { ItemBaseResponse } from 'src/common/base';
+import { emit } from 'process';
 
 @Injectable()
 export class AuthService {
+  private readonly DEFAULT_GOOGLE_PASSWORD = "User@12345";
   constructor(
     private readonly jwtService: JwtService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
@@ -23,6 +25,43 @@ export class AuthService {
     if (user.isDeleted === true) throw new BadRequestException('This account has been deleted');
     const isPasswordMatch = await bcrypt.compare(body.password, user.password);
     if (!isPasswordMatch) throw new BadRequestException('Wrong login credentials');
+    const payload = {
+      id: user.id,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      fullname: user.fullname,
+    }
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: +process.env.JWT_ACCESS_TOKEN_EXPIRATION,
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+    })
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      expiresIn: +process.env.JWT_REFRESH_TOKEN_EXPIRATION,
+      secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+    })
+    return {
+      status: HttpStatus.OK,
+      data:{
+        token: {
+          accessToken,
+          refreshToken
+        }
+      },
+      message: 'Assign successfully'
+    }
+  }
+
+  async google(body: GoogleSignInRequestBody): Promise<ItemBaseResponse<AssignResponseData>> {
+    const user = await this.userRepository.findOne({where:{email: body.email}});
+    if (!user) {
+      return await this.signUp({
+        email: body.email,
+        fullname: body.username,
+        password: this.DEFAULT_GOOGLE_PASSWORD,
+        phoneNumber: body.phoneNumber
+      })
+    }
     const payload = {
       id: user.id,
       email: user.email,

@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { RefreshRequestBody, SignInRequestBody, SignUpRequestBody } from './auth.dto';
+import { GoogleSignInRequestBody, RefreshRequestBody, SignInRequestBody, SignUpRequestBody } from './auth.dto';
 import { AuthService } from './auth.service';
 import { AuthenticationGuard } from 'src/common/guards';
 import { AccessToken } from 'src/common/decorators/token.decorator';
@@ -27,6 +27,11 @@ export class AuthController {
   @Post('signup')
   async signUp(@Body() body: SignUpRequestBody) {
     return await this.authService.signUp(body);
+  }
+
+  @Post('google')
+  async google(@Body() body: GoogleSignInRequestBody) {
+    return await this.authService.google(body);
   }
 
   @UseGuards(AuthenticationGuard)

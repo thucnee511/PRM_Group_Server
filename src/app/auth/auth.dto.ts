@@ -40,3 +40,12 @@ export class AssignResponseData {
         refreshToken: string;
     }
 }
+
+export class GoogleSignInRequestBody{
+    @ApiProperty()
+    email: string;
+    @ApiProperty()
+    username: string;
+    @ApiProperty()
+    phoneNumber: string;
+}
