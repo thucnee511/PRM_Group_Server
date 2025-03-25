@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthenticationGuard } from 'src/common/guards';
 import { CategoryService } from './category.service';
 import { Category } from 'src/common/models';
@@ -19,6 +19,7 @@ export class CategoryController {
 
   @Post()
   @UseGuards(AuthenticationGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new category' })
   async create(@Body() body: CreateCategoryDto): Promise<ItemBaseResponse<Category>> {
     return await this.categoryService.create(body);

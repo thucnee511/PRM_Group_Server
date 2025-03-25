@@ -13,8 +13,8 @@ export class BrandController {
     return await this.brandService.findAll();
   }
 
-    @Post()
-    async create(@Body() body: CreateBrandDto) {
-        return await this.brandService.create(body);
-    }
+  @Post()
+  async create(@Body() body: CreateBrandDto) {
+    return await this.brandService.create(body);
+  }
 }
