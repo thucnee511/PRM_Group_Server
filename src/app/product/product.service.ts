@@ -117,17 +117,13 @@ export class ProductService {
       },
     });
     if (!brand) throw new NotFoundException('Brand not found');
-    this.productRepository.create({
+    const data = await this.productRepository.create({
       ...body,
     });
     return {
       status: HttpStatus.CREATED,
       message: 'Product has been created successfully',
-      data: await this.productRepository.findOne({
-        where: {
-          name: body.name,
-        },
-      }),
+      data: data
     };
   }
 
